@@ -4,11 +4,17 @@ const EMBED_SERVICE_URL = process.env.EMBED_SERVICE_URL ?? "http://localhost:800
 
 // Turns each text into a 384-number vector using the Python embedding service.
 export async function embed(texts: string[]): Promise<number[][]> {
-  const res = await fetch(`${EMBED_SERVICE_URL}/embed`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ texts }),
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${EMBED_SERVICE_URL}/embed`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ texts }),
+    });
+  } catch {
+    // fetch only throws when it cannot connect at all, usually because the service is not started.
+    throw new Error(`Could not reach the embedding service at ${EMBED_SERVICE_URL}. Is it running?`);
+  }
   if (!res.ok) throw new Error(`Embed service returned ${res.status}`);
   const data = await res.json();
   return data.embeddings;
