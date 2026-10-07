@@ -1,7 +1,7 @@
 import { GoogleGenAI, type Content, type FunctionDeclaration, type Part } from "@google/genai";
 import { createRun, finishRun, step, type Ctx } from "./recorder.ts";
+import { DEFAULT_MODEL } from "./models.ts";
 
-export const DEFAULT_MODEL = "gemini-3.7-flash";
 const MAX_ITERATIONS = 8;
 const SYSTEM_PROMPT =
   "You are a helpful assistant. Use the tools when they help. Answer briefly.";
