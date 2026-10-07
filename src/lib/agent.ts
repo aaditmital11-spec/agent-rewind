@@ -1,10 +1,13 @@
 import { GoogleGenAI, type Content, type FunctionDeclaration, type Part } from "@google/genai";
 import { createRun, finishRun, step, type Ctx } from "./recorder.ts";
 import { DEFAULT_MODEL } from "./models.ts";
+import { searchDocs } from "./rag.ts";
 
 const MAX_ITERATIONS = 8;
 const SYSTEM_PROMPT =
-  "You are a helpful assistant. Use the tools when they help. Answer briefly.";
+  "You are a helpful assistant. Use the tools when they help. Answer briefly. " +
+  "For questions about Nimbus Cloud (plans, pricing, refunds, API limits, support), " +
+  "call search_docs and answer only from the chunks it returns.";
 
 // Some of these are designed to fail so there is something to debug.
 export const DEMO_QUESTIONS = [
@@ -14,6 +17,9 @@ export const DEMO_QUESTIONS = [
   "What's the weather in Atlantis?", // unknown city: get_weather throws
   "How much is 12 stone in kilograms?", // stone is not supported: the model may convert stone to lb in its head first, untraced
   "Is 30 degrees hot?", // vague: no unit given, the model has to guess
+  "How much does Nimbus Pro cost per year for 4 users?", // search_docs, then calculator
+  "Can I get a refund on a Nimbus annual plan after 3 weeks?",
+  "What is the API rate limit on the Nimbus Pro plan?", // the archived 2023 pricing page also matches
 ];
 
 type Args = Record<string, unknown>;
@@ -100,6 +106,8 @@ function convertUnits(value: number, from: string, to: string) {
 }
 
 export async function runTool(name: string, args: Args): Promise<unknown> {
+  // k is not offered to the model, but you can add it when editing a step for replay.
+  if (name === "search_docs") return searchDocs(String(args.query), Number(args.k ?? 3));
   if (name === "calculator") return { result: calculate(String(args.expression)) };
   if (name === "get_weather") return getWeather(String(args.city));
   if (name === "convert_units") {
@@ -139,6 +147,15 @@ const TOOL_DECLARATIONS: FunctionDeclaration[] = [
         to: { type: "string", description: "One of km, miles, c, f, kg, lb" },
       },
       required: ["value", "from", "to"],
+    },
+  },
+  {
+    name: "search_docs",
+    description: "Search the Nimbus Cloud docs. Returns the most relevant chunks with similarity scores.",
+    parametersJsonSchema: {
+      type: "object",
+      properties: { query: { type: "string", description: "What to look for, in plain words" } },
+      required: ["query"],
     },
   },
 ];
@@ -192,7 +209,9 @@ export async function runAgent(question: string, options: AgentOptions = {}) {
       const results: Part[] = [];
       for (const call of calls) {
         const name = call.name ?? "unknown";
-        const result = await step(ctx, "tool", name, call.args ?? {}, (args) => runTool(name, args));
+        // search_docs is recorded as a retrieval so the UI can show its chunks and scores.
+        const type = name === "search_docs" ? "retrieval" : "tool";
+        const result = await step(ctx, type, name, call.args ?? {}, (args) => runTool(name, args));
         results.push({ functionResponse: { id: call.id, name, response: { result } } });
       }
       contents = [...contents, { role: "user", parts: results }];
