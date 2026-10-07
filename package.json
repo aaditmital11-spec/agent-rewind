@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "demo": "node --env-file=.env.local scripts/demo.ts"
+    "demo": "node --env-file=.env.local scripts/demo.ts",
+    "ingest": "node --env-file=.env.local scripts/ingest.ts"
   },
   "dependencies": {
     "@google/genai": "^2.27.0",
