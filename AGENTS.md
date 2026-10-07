@@ -22,6 +22,9 @@ agent-rewind/
     lib/recorder.ts      step() wrapper: records and replays every call
     lib/agent.ts         demo agent and its tools
     lib/rag.ts           search_docs tool (calls embed service + pgvector)
+  scripts/demo.ts        run demo questions from the terminal
+  scripts/ingest.ts      chunk and embed data/docs into the chunks table
+  data/docs/             sample Nimbus Cloud docs for RAG
   embed-service/
     main.py              FastAPI app with /embed
     requirements.txt
@@ -36,6 +39,7 @@ docker compose up -d                 # start Postgres (Docker Desktop must be ru
 npm run dev                          # Next.js at localhost:3000
 docker compose exec db psql -U postgres -d agentrewind   # SQL shell
 docker compose down -v               # reset the database (deletes all data)
+npm run ingest                       # load data/docs into chunks (embed service must be running)
 
 # Embedding service
 cd embed-service
