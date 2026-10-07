@@ -13,7 +13,6 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
   const body = await request.json().catch(() => null);
   const fromSeq = body?.fromSeq;
-  const model = typeof body?.model === "string" && body.model ? body.model : undefined;
   let newInput = body?.newInput;
 
   const steps: Record<number, RecordedStep> = {};
@@ -22,6 +21,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   if (!Number.isInteger(fromSeq) || !steps[fromSeq]) {
     return Response.json({ error: "fromSeq must be the seq of a step in this run" }, { status: 400 });
   }
+
+  // No model picked: keep the model the original run was using at this point.
+  const lastLlm = data.steps.filter((s) => s.type === "llm" && s.seq <= fromSeq).at(-1);
+  const originalModel = (lastLlm?.input as { model?: string } | undefined)?.model;
+  const model = typeof body?.model === "string" && body.model ? body.model : originalModel;
   if (newInput === undefined) {
     return Response.json({ error: "newInput is required" }, { status: 400 });
   }
