@@ -20,6 +20,22 @@ export async function embed(texts: string[]): Promise<number[][]> {
   return data.embeddings;
 }
 
+// One chunk per "## " section. Each chunk starts with the document title,
+// so a section like "## Pro plan" still says which document it came from.
+export function chunkMarkdown(text: string): string[] {
+  const lines = text.split(/\r?\n/);
+  const title = lines[0].replace(/^#\s*/, "");
+  const sections: string[][] = [[]];
+  for (const line of lines.slice(1)) {
+    if (line.startsWith("## ")) sections.push([]);
+    sections[sections.length - 1].push(line);
+  }
+  return sections
+    .map((section) => section.join("\n").trim())
+    .filter((body) => body !== "")
+    .map((body) => `${title}\n${body}`);
+}
+
 export type RetrievedChunk = {
   id: number;
   source: string;
