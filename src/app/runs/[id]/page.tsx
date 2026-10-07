@@ -41,7 +41,7 @@ export default async function RunPage({ params }: { params: Promise<{ id: string
         )}
       </div>
 
-      <RunView steps={steps} />
+      <RunView runId={run.id} steps={steps} />
     </div>
   );
 }

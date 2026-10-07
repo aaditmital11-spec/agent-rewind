@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { RecordedStep } from "@/lib/recorder.ts";
 import { TypeBadge, formatDuration } from "./badges.tsx";
+import ReplayForm from "./ReplayForm.tsx";
 
 function Json({ value }: { value: unknown }) {
   return (
@@ -13,7 +14,7 @@ function Json({ value }: { value: unknown }) {
 }
 
 // Timeline of steps on the left, the selected step's details on the right.
-export default function RunView({ steps }: { steps: RecordedStep[] }) {
+export default function RunView({ runId, steps }: { runId: number; steps: RecordedStep[] }) {
   // Open the first failed step by default, since that is usually what you want to debug.
   const firstFailed = steps.find((s) => s.error);
   const [selectedSeq, setSelectedSeq] = useState(firstFailed?.seq ?? steps[0]?.seq);
@@ -51,6 +52,8 @@ export default function RunView({ steps }: { steps: RecordedStep[] }) {
             <h2 className="font-semibold">{selected.name}</h2>
             <span className="ml-auto text-sm text-gray-500">{formatDuration(selected.duration_ms)}</span>
           </div>
+          {/* key resets the form when a different step is selected */}
+          <ReplayForm key={selected.seq} runId={runId} step={selected} />
           {selected.error && (
             <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
               <div className="mb-1 font-semibold">Error</div>
