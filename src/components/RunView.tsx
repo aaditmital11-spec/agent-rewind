@@ -13,6 +13,30 @@ function Json({ value }: { value: unknown }) {
   );
 }
 
+type Chunk = { id: number; source: string; content: string; similarity: number };
+
+// Retrieval output: each chunk with its rank, source file, and similarity score.
+function Chunks({ chunks }: { chunks: Chunk[] }) {
+  return (
+    <ol className="space-y-2">
+      {chunks.map((c, i) => (
+        <li key={c.id} className="rounded border border-amber-200 bg-amber-50 p-3 text-sm">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="text-gray-400">{i + 1}.</span>
+            <span className="font-mono text-xs">{c.source}</span>
+            <span className="ml-auto font-mono text-xs">similarity {c.similarity.toFixed(3)}</span>
+            {/* Bar width shows the score, 0 to 1 */}
+            <span className="h-2 w-20 rounded bg-amber-200">
+              <span className="block h-2 rounded bg-amber-500" style={{ width: `${Math.max(0, c.similarity) * 100}%` }} />
+            </span>
+          </div>
+          <p className="whitespace-pre-wrap text-gray-800">{c.content}</p>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
 // Timeline of steps on the left, the selected step's details on the right.
 export default function RunView({ runId, steps }: { runId: number; steps: RecordedStep[] }) {
   // Open the first failed step by default, since that is usually what you want to debug.
@@ -65,8 +89,14 @@ export default function RunView({ runId, steps }: { runId: number; steps: Record
             <Json value={selected.input} />
           </div>
           <div>
-            <h3 className="mb-1 text-xs font-semibold uppercase text-gray-500">Output</h3>
-            <Json value={selected.output} />
+            <h3 className="mb-1 text-xs font-semibold uppercase text-gray-500">
+              {selected.type === "retrieval" ? "Retrieved chunks" : "Output"}
+            </h3>
+            {selected.type === "retrieval" && Array.isArray(selected.output) ? (
+              <Chunks chunks={selected.output} />
+            ) : (
+              <Json value={selected.output} />
+            )}
           </div>
         </section>
       )}
