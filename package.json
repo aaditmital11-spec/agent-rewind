@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "demo": "node --env-file=.env.local scripts/demo.ts",
-    "ingest": "node --env-file=.env.local scripts/ingest.ts"
+    "ingest": "node --env-file=.env.local scripts/ingest.ts",
+    "test": "node --env-file-if-exists=.env.local --test tests/*.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.27.0",
