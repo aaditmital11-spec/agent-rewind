@@ -24,6 +24,7 @@ agent-rewind/
     lib/rag.ts           search_docs tool (calls embed service + pgvector)
   scripts/demo.ts        run demo questions from the terminal
   scripts/ingest.ts      chunk and embed data/docs into the chunks table
+  tests/                 node:test tests (tools, chunking, record and replay)
   data/docs/             sample Nimbus Cloud docs for RAG
   embed-service/
     main.py              FastAPI app with /embed
@@ -35,11 +36,13 @@ Commands
 The developer is on Windows PowerShell. Give commands that work there.
 
 powershell
-docker compose up -d                 # start Postgres (Docker Desktop must be running)
+docker compose up -d db              # start only Postgres, for local dev (Docker Desktop must be running)
+docker compose up -d --build        # or run everything in Docker: Postgres, embed service, app
 npm run dev                          # Next.js at localhost:3000
 docker compose exec db psql -U postgres -d agentrewind   # SQL shell
 docker compose down -v               # reset the database (deletes all data)
 npm run ingest                       # load data/docs into chunks (embed service must be running)
+npm test                             # unit tests + recorder tests (Postgres must be running)
 
 # Embedding service
 cd embed-service
