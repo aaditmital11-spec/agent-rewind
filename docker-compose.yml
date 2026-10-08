@@ -10,6 +10,34 @@ services:
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
       - pgdata:/var/lib/postgresql/data
+    # Lets the app wait until Postgres accepts connections, not just until the container starts.
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "agentrewind"]
+      interval: 2s
+      retries: 15
+
+  embed:
+    build: ./embed-service
+    ports:
+      - "8000:8000"
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    # GEMINI_API_KEY comes from .env.local.
+    env_file:
+      - path: .env.local
+        required: false
+    # These win over .env.local: inside Docker, services reach each other by service name.
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/agentrewind
+      EMBED_SERVICE_URL: http://embed:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      embed:
+        condition: service_started
 
 volumes:
   pgdata:
