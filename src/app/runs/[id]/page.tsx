@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getRun } from "@/lib/runs.ts";
 import RunView from "@/components/RunView.tsx";
-import { StatusBadge, formatDuration } from "@/components/badges.tsx";
+import { StatusBadge } from "@/components/ui/Badge.tsx";
+import { formatDuration } from "@/lib/format.ts";
 
 export default async function RunPage({ params }: { params: Promise<{ id: string }> }) {
   const id = Number((await params).id);

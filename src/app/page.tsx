@@ -3,7 +3,8 @@ import { connection } from "next/server";
 import { listRuns } from "@/lib/runs.ts";
 import { DEMO_QUESTIONS } from "@/lib/agent.ts";
 import NewRunForm from "@/components/NewRunForm.tsx";
-import { StatusBadge, formatDuration } from "@/components/badges.tsx";
+import { StatusBadge } from "@/components/ui/Badge.tsx";
+import { formatDuration } from "@/lib/format.ts";
 
 export default async function Home() {
   await connection(); // read the database on every request, not once at build time

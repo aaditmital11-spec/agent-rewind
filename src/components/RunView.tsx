@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import type { RecordedStep } from "@/lib/recorder.ts";
-import { TypeBadge, formatDuration } from "./badges.tsx";
+import { TypeBadge } from "./ui/Badge.tsx";
+import { formatDuration } from "@/lib/format.ts";
 import ReplayForm from "./ReplayForm.tsx";
 
 function Json({ value }: { value: unknown }) {
