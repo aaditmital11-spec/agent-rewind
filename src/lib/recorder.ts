@@ -24,10 +24,14 @@ export type Ctx = {
   };
 };
 
-export async function createRun(name: string, replayedFromRunId?: number): Promise<number> {
+export async function createRun(
+  name: string,
+  replayedFromRunId?: number,
+  replayedFromSeq?: number
+): Promise<number> {
   const result = await pool.query(
-    "INSERT INTO runs (name, replayed_from_run_id) VALUES ($1, $2) RETURNING id",
-    [name, replayedFromRunId ?? null]
+    "INSERT INTO runs (name, replayed_from_run_id, replayed_from_seq) VALUES ($1, $2, $3) RETURNING id",
+    [name, replayedFromRunId ?? null, replayedFromSeq ?? null]
   );
   return result.rows[0].id;
 }

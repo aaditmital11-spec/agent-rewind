@@ -9,6 +9,8 @@ CREATE TABLE runs (
   status TEXT NOT NULL DEFAULT 'running' CHECK (status IN ('running', 'success', 'failed')),
   error TEXT,
   replayed_from_run_id INTEGER REFERENCES runs(id),
+  -- For a replay: the step it restarted from. Steps before it reused recorded outputs.
+  replayed_from_seq INTEGER,
   started_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 

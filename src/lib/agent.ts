@@ -183,7 +183,7 @@ export type AgentOptions = {
 };
 
 export async function runAgent(question: string, options: AgentOptions = {}) {
-  const runId = await createRun(question, options.replayedFromRunId);
+  const runId = await createRun(question, options.replayedFromRunId, options.replay?.fromSeq);
   const ctx: Ctx = { runId, seq: 0, replay: options.replay };
   let model = options.model ?? DEFAULT_MODEL;
   let contents: Content[] = [{ role: "user", parts: [{ text: question }] }];

@@ -57,7 +57,7 @@ DATABASE_URL
 GEMINI_API_KEY
 EMBED_SERVICE_URL (default http://localhost:8000)
 Data model
-runs: id, name, status (running | success | failed), error, replayed_from_run_id, started_at
+runs: id, name, status (running | success | failed), error, replayed_from_run_id, replayed_from_seq, started_at
 steps: id, run_id, seq, type (llm | tool | retrieval), name, input JSONB, output JSONB, error, duration_ms
 chunks: id, source, content, embedding vector(384)
 (run_id, seq) is unique. Replay depends on this.
@@ -71,7 +71,7 @@ Steps before N return their recorded output from Postgres and do not call any AP
 Step N uses the edited input (or a different model) and runs live
 Steps after N run live
 
-A replay creates a new run with replayed_from_run_id set to the original run. Postgres is the cache. Do not add Redis or another caching layer.
+A replay creates a new run with replayed_from_run_id set to the original run and replayed_from_seq set to N. Postgres is the cache. Do not add Redis or another caching layer.
 
 Rule: never call Gemini, a tool, or the embed service directly from the agent. Always go through step().
 
