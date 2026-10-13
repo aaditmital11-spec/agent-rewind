@@ -7,30 +7,7 @@ import { TypeBadge } from "./ui/Badge.tsx";
 import CodeBlock from "./ui/CodeBlock.tsx";
 import Tabs from "./ui/Tabs.tsx";
 import ReplayForm from "./ReplayForm.tsx";
-
-type Chunk = { id: number; source: string; content: string; similarity: number };
-
-// Retrieval output: each chunk with its rank, source file, and similarity score.
-function Chunks({ chunks }: { chunks: Chunk[] }) {
-  return (
-    <ol className="space-y-2">
-      {chunks.map((c, i) => (
-        <li key={c.id} className="rounded border border-amber-200 bg-amber-50 p-3 text-sm">
-          <div className="mb-2 flex items-center gap-2">
-            <span className="text-gray-400">{i + 1}.</span>
-            <span className="font-mono text-xs">{c.source}</span>
-            <span className="ml-auto font-mono text-xs">similarity {c.similarity.toFixed(3)}</span>
-            {/* Bar width shows the score, 0 to 1 */}
-            <span className="h-2 w-20 rounded bg-amber-200">
-              <span className="block h-2 rounded bg-amber-500" style={{ width: `${Math.max(0, c.similarity) * 100}%` }} />
-            </span>
-          </div>
-          <p className="whitespace-pre-wrap text-gray-800">{c.content}</p>
-        </li>
-      ))}
-    </ol>
-  );
-}
+import RetrievedChunks from "./RetrievedChunks.tsx";
 
 const BAR_COLORS: Record<string, string> = { llm: "bg-llm/60", tool: "bg-tool/60", retrieval: "bg-retrieval/60" };
 
@@ -203,7 +180,7 @@ function StepDetail({ runId, step, cachedFrom }: { runId: number; step: Recorded
         {tab === "input" && <CodeBlock value={step.input} />}
         {tab === "output" &&
           (step.type === "retrieval" && Array.isArray(step.output) ? (
-            <Chunks chunks={step.output} />
+            <RetrievedChunks chunks={step.output} />
           ) : (
             <CodeBlock value={step.output} />
           ))}
