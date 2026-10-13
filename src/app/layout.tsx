@@ -23,18 +23,18 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${plexSans.variable} ${plexMono.variable} antialiased`}>
-      <body className="min-h-screen bg-gray-50 font-sans text-gray-900">
-        <header className="border-b border-gray-200 bg-white">
-          <div className="mx-auto flex max-w-7xl items-baseline gap-3 px-4 py-3">
-            <Link href="/" className="text-lg font-semibold">
+      <body className="min-h-screen bg-bg font-sans text-fg">
+        <header className="sticky top-0 z-10 border-b border-line bg-surface">
+          <nav className="mx-auto flex h-11 max-w-[1440px] items-center gap-6 px-4 sm:px-6">
+            <Link href="/" className="text-sm font-semibold tracking-tight">
               Agent Rewind
             </Link>
-            <span className="hidden text-sm text-gray-500 sm:inline">
-              record, inspect, and replay agent runs
-            </span>
-          </div>
+            <Link href="/" className="text-sm text-muted hover:text-fg">
+              Runs
+            </Link>
+          </nav>
         </header>
-        <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
+        <main className="mx-auto max-w-[1440px] px-4 py-5 sm:px-6">{children}</main>
       </body>
     </html>
   );
