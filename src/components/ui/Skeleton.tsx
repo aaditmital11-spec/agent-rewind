@@ -1,4 +1,6 @@
-// A gray placeholder block shown while data loads. Size it with className.
-export default function Skeleton({ className = "" }: { className?: string }) {
-  return <div aria-hidden="true" className={`rounded bg-subtle motion-safe:animate-pulse ${className}`} />;
+import type { CSSProperties } from "react";
+
+// A gray placeholder block shown while data loads. Size it with className or style.
+export default function Skeleton({ className = "", style }: { className?: string; style?: CSSProperties }) {
+  return <div aria-hidden="true" style={style} className={`rounded bg-subtle motion-safe:animate-pulse ${className}`} />;
 }
