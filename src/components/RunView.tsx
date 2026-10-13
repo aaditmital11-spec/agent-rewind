@@ -147,6 +147,9 @@ function StepDetail({ runId, step, cachedFrom }: { runId: number; step: Recorded
         <div className="flex items-center gap-2">
           <h2 className="min-w-0 truncate font-mono text-sm font-medium">{step.name}</h2>
           {step.error && <FailIcon />}
+          <div className="ml-auto">
+            <ReplayForm runId={runId} step={step} />
+          </div>
         </div>
         <dl className="flex flex-wrap gap-x-5 gap-y-1 text-xs">
           <div className="flex gap-1.5">
@@ -189,7 +192,6 @@ function StepDetail({ runId, step, cachedFrom }: { runId: number; step: Recorded
             {step.error}
           </pre>
         )}
-        <ReplayForm runId={runId} step={step} />
       </div>
     </section>
   );
